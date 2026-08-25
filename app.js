@@ -214,18 +214,13 @@ window.deleteTaskItem = function(taskId) {
 
 function addNewTask() {
     const input = document.getElementById("new-task-input");
-    if (!input) {
-        console.error("Поле вводу #new-task-input не знайдено!");
-        return;
-    }
+    if (!input) return;
     
     const taskName = input.value.trim();
     if (!taskName) {
         alert("Введіть назву завдання!");
         return;
     }
-
-    console.log("Додавання завдання:", taskName);
 
     fetch(WEB_APP_URL, {
         method: "POST",
@@ -237,19 +232,16 @@ function addNewTask() {
     })
     .then(res => res.json())
     .then(data => {
-        console.log("Відповідь сервера:", data);
         if (data.status === "success") {
-            input.value = ""; // Очищаємо поле
+            input.value = ""; 
             
-            // Зберігаємо поточні дані в пам'яті (щоб не робити зайвий запит) 
-            // або одразу завантажуємо оновлені дані з сервера перед оновленням модалки
             fetch(`${WEB_APP_URL}?action=getData&userId=${userId}`)
                 .then(r => r.json())
                 .then(d => {
                     if (d.status === "success") {
                         currentData = d.tasks;
-                        renderTable(currentData); // Оновлюємо фонову таблицю
-                        openEditModal();          // Перевідкриваємо модалку, щоб нове завдання з'явилося в списку
+                        renderTable(currentData); 
+                        openEditModal();          
                     }
                 });
         } else {
@@ -257,7 +249,7 @@ function addNewTask() {
         }
     })
     .catch(err => {
-        console.error("Add task fetch error:", err);
+        console.error("Add task error:", err);
         alert("Помилка зв'язку з сервером.");
     });
 }
