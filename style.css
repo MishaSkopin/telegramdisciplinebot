@@ -1,111 +1,140 @@
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--tg-theme-bg-color, #18191a);
-    color: var(--tg-theme-text-color, #ffffff);
-    margin: 0;
-    padding: 8px;
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+    background: #121212; 
+    color: #fff; 
+    margin: 0; 
+    padding: 8px; 
 }
 
-.app-container {
-    max-width: 100%;
-    margin: 0 auto;
+.header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 10px; 
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--tg-theme-hint-color, #2f3336);
-    padding-bottom: 6px;
+.header h2 { 
+    margin: 0; 
+    font-size: 16px; 
 }
 
-.header h2 {
-    font-size: 16px;
-    margin: 0;
+.btn-icon { 
+    background: #222; 
+    border: 1px solid #444; 
+    color: #fff; 
+    font-size: 14px; 
+    padding: 5px 8px; 
+    border-radius: 6px; 
+    cursor: pointer; 
 }
 
-.header-buttons button {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    margin-left: 6px;
+.table-container { 
+    overflow-x: auto; 
+    background: #1e1e1e; 
+    border-radius: 8px; 
+    border: 1px solid #333; 
+    max-height: 88vh; 
 }
 
-.loading {
-    text-align: center;
-    color: var(--tg-theme-hint-color, #707579);
-    margin-top: 30px;
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 620px; 
+    font-size: 12px; 
 }
 
-/* Таблиця */
-.table-scroll {
-    overflow-x: auto;
-    max-height: 85vh;
+th, td { 
+    border: 1px solid #333; 
+    padding: 4px 2px; 
+    text-align: center; 
+    white-space: nowrap; 
 }
 
-.tracker-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
+th { 
+    background: #0d1b2a; 
+    color: #4ea8de; 
+    font-weight: 600; 
+    position: sticky; 
+    top: 0; 
+    z-index: 2; 
 }
 
-.tracker-table th, .tracker-table td {
-    border: 1px solid #2f3336;
-    padding: 5px 3px;
-    text-align: center;
-    white-space: nowrap;
+td.task-name { 
+    text-align: left !important; 
+    padding-left: 6px !important; 
+    max-width: 140px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
 }
 
-.tracker-table th {
-    background-color: var(--tg-theme-secondary-bg-color, #212325);
-    color: #58a6ff;
-    font-size: 11px;
-    position: sticky;
-    top: 0;
-    z-index: 2;
+td.avg-cell { 
+    font-weight: bold; 
+    color: #72efdd; 
 }
 
-.task-name-cell {
-    text-align: left !important;
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #ffffff;
-    font-size: 12px;
-    padding-left: 6px !important;
-}
-
-/* Капсульні селекти (як на скріншоті) */
-.status-select {
-    width: 42px;
-    height: 26px;
-    border: 1px solid #3f4448;
-    background-color: #26292e;
-    color: #c9d1d9;
-    font-size: 12px;
-    text-align: center;
-    border-radius: 6px;
-    outline: none;
-    appearance: none; /* ховаємо стандартну стрілочку браузера */
+/* Капсульні селекти з твоїми кольорами */
+select { 
+    background: #2a2a2a; 
+    color: #fff; 
+    border: 1px solid #444; 
+    border-radius: 4px; 
+    padding: 2px 1px; 
+    font-size: 11px; 
+    width: 38px; 
+    height: 22px; 
+    text-align: center; 
+    cursor: pointer; 
+    appearance: none;
     -webkit-appearance: none;
-    cursor: pointer;
 }
 
-.status-select:focus {
-    border-color: #2ea043;
+select.val-yes { 
+    background: #1b4332; 
+    color: #72efdd; 
+    border-color: #2dc653; 
 }
 
-/* Колонка відсотків */
-.progress-cell {
-    font-size: 11px;
-    color: #3fb950;
-    text-align: center;
+select.val-no { 
+    background: #4a0e17; 
+    color: #ff8fa3; 
+    border-color: #ff4d6d; 
 }
 
-/* Модальні вікна залишаються аккуратними у стилі Telegram */
+select.val-none { 
+    background: #2b2d42; 
+    color: #8d99ae; 
+    border-color: #495057; 
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+input[type="text"] { 
+    width: 100%; 
+    padding: 8px; 
+    box-sizing: border-box; 
+    margin-bottom: 8px; 
+    background: #222; 
+    color: #fff; 
+    border: 1px solid #444; 
+    border-radius: 6px; 
+    font-size: 12px; 
+}
+
+button.submit-btn { 
+    width: 100%; 
+    padding: 8px; 
+    background: #0088cc; 
+    color: white; 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    font-size: 12px; 
+}
+
+/* Модалка редагування */
 .modal {
     position: fixed;
     z-index: 100;
@@ -113,74 +142,52 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0,0,0,0.7);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .modal-content {
-    background-color: var(--tg-theme-bg-color, #212325);
-    color: var(--tg-theme-text-color, #ffffff);
-    padding: 16px;
-    border-radius: 12px;
+    background-color: #1e1e1e;
+    color: #fff;
+    padding: 14px;
+    border-radius: 10px;
     width: 90%;
     max-width: 400px;
     max-height: 80vh;
     overflow-y: auto;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border: 1px solid #333;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-.close {
-    position: absolute;
-    right: 12px;
-    top: 8px;
-    font-size: 22px;
-    cursor: pointer;
-    color: #8b949e;
+.edit-item { 
+    display: flex; 
+    gap: 6px; 
+    margin-bottom: 6px; 
+    align-items: center; 
 }
 
-.add-task-box {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
+.edit-item input { 
+    margin-bottom: 0; 
 }
 
-.add-task-box input, .edit-task-item input {
-    flex: 1;
-    padding: 6px 8px;
-    border: 1px solid #3f4448;
-    border-radius: 6px;
-    background: #18191a;
-    color: #ffffff;
-    font-size: 12px;
+.btn-save { 
+    background: #2ec4b6; 
+    border: none; 
+    border-radius: 6px; 
+    color: #fff; 
+    padding: 6px 10px; 
+    font-size: 12px; 
+    cursor: pointer; 
 }
 
-.add-task-box button {
-    padding: 6px 10px;
-    background-color: #238636;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
+.btn-delete { 
+    background: #e63946; 
+    border: none; 
+    border-radius: 6px; 
+    color: #fff; 
+    padding: 6px 10px; 
+    font-size: 12px; 
+    cursor: pointer; 
 }
-
-.edit-task-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 8px;
-}
-
-.edit-task-item button {
-    padding: 5px 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 11px;
-}
-
-.btn-save-edit { background-color: #238636; color: white; }
-.btn-del-edit { background-color: #da3633; color: white; }
