@@ -124,7 +124,11 @@ function renderTable(tasks) {
 }
 
 function renderSelectCell(taskId, day, currentValue) {
-    // Масив опцій: значення для бекенду (value) та те, що бачить користувач (label)
+    // Визначаємо клас залежно від значення
+    let valClass = "val-none";
+    if (currentValue === "так") valClass = "val-yes";
+    if (currentValue === "ні") valClass = "val-no";
+
     const options = [
         { val: "незаплановано", label: "-" },
         { val: "так", label: "так" },
@@ -135,7 +139,7 @@ function renderSelectCell(taskId, day, currentValue) {
         `<option value="${opt.val}" ${opt.val === currentValue ? "selected" : ""}>${opt.label}</option>`
     ).join("");
 
-    return `<td><select class="status-select" data-task-id="${taskId}" data-day="${day}">${optionsHtml}</select></td>`;
+    return `<td><select class="status-select ${valClass}" data-task-id="${taskId}" data-day="${day}">${optionsHtml}</select></td>`;
 }
 
 function updateStatus(taskId, day, value) {
