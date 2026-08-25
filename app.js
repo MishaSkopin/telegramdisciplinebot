@@ -263,21 +263,14 @@ function openEditModal() {
 
     html += `<div class="edit-task-item">
       <div class="move-btns">
-        <button class="btn-move" 
-                onclick="moveTaskItem('${task.task_id}', 'up')" 
-                ${isFirst || isMoving ? "disabled" : ""} 
-                title="Вгору">↑</button>
-        <button class="btn-move" 
-                onclick="moveTaskItem('${task.task_id}', 'down')" 
-                ${isLast || isMoving ? "disabled" : ""} 
-                title="Вниз">↓</button>
+        <button class="btn-move" onclick="moveTaskItem('${task.task_id}', 'up')" ${isFirst ? "disabled" : ""} title="Вгору">↑</button>
+        <button class="btn-move" onclick="moveTaskItem('${task.task_id}', 'down')" ${isLast ? "disabled" : ""} title="Вниз">↓</button>
       </div>
       <input type="text" value="${task.task_name}" id="input-${task.task_id}">
       <button class="btn-save-edit" onclick="saveTaskEdit('${task.task_id}')">Зберегти</button>
       <button class="btn-del-edit" onclick="deleteTaskItem('${task.task_id}')">Видалити</button>
     </div>`;
   });
-
   listContainer.innerHTML = html || "<p>Немає завдань.</p>";
   document.getElementById("edit-modal").style.display = "flex";
 }
@@ -338,40 +331,15 @@ window.deleteTaskItem = function(taskId) {
   });
 };
 
-let isMoving = false; // захист від подвійних кліків
-
 window.moveTaskItem = function(taskId, direction) {
   if (selectedWeek !== weekNow) {
     alert("Редагувати можна лише поточний тиждень");
     return;
   }
 
-  if (isMoving) return; // вже йде переміщення
-  isMoving = true;
+  // Блокуємо кнопки на час запиту (щоб не натискали багато разів)
+  document.querySelectorAll(".btn-move").forEach(btn => btn.disabled = true);
 
-  // Знаходимо індекс
-  const idx = currentData.findIndex(t => String(t.task_id) === String(taskId));
-  if (idx === -1) {
-    isMoving = false;
-    return;
-  }
-
-  const newIdx = direction === "up" ? idx - 1 : idx + 1;
-  if (newIdx < 0 || newIdx >= currentData.length) {
-    isMoving = false;
-    return;
-  }
-
-  // === ОПТИМІСТИЧНО міняємо місцями ===
-  const temp = currentData[idx];
-  currentData[idx] = currentData[newIdx];
-  currentData[newIdx] = temp;
-
-  // Миттєво оновлюємо і модалку, і основну таблицю
-  openEditModal();
-  renderTable(currentData);
-
-  // Відправляємо на сервер
   fetch(WEB_APP_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -384,19 +352,19 @@ window.moveTaskItem = function(taskId, direction) {
   })
   .then(res => res.json())
   .then(data => {
-    if (data.status !== "success") {
-      // Якщо сервер сказав "ні" — повертаємо старий порядок
-      alert(data.message || "Не вдалося перемістити");
-      return loadAppData().then(() => openEditModal());
+    if (data.status === "success") {
+      // Чекаємо, поки дані реально оновляться, і тільки тоді перемальовуємо модалку
+      return loadAppData().then(() => {
+        openEditModal();   // тепер currentData вже новий
+      });
+    } else {
+      alert(data.message || "Помилка");
+      openEditModal(); // повертаємо кнопки
     }
-    // Успіх — нічого не робимо, бо вже все на місці
   })
   .catch(() => {
     alert("Помилка зв'язку");
-    return loadAppData().then(() => openEditModal());
-  })
-  .finally(() => {
-    isMoving = false;
+    openEditModal();
   });
 };
 
