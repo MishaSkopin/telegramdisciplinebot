@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Шапка застосунку -->
+        <header class="header">
+            <h2 id="week-title">Тижневий трекер</h2>
+            <div class="header-buttons">
+                <button id="btn-cabin" title="Мій кабінет">🏠</button>
+                <button id="btn-edit" title="Редагувати завдання">✏️</button>
+            </div>
+        </header>
+
+        <!-- Основний блок завантаження / таблиці -->
+        <div id="loading" class="loading">Завантаження завдань...</div>
+        <div id="table-container" class="table-container" style="display: none;"></div>
+    </div>
+
+    <!-- Модальне вікно «Олівчик» (Редагування та додавання завдань) -->
+    <div id="edit-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h3>Редагування завдань</h3>
+            
+            <!-- Поле для додавання нового завдання -->
+            <div class="add-task-box">
+                <input type="text" id="new-task-input" placeholder="Введіть нове завдання...">
+                <button id="btn-add-task">Додати</button>
+            </div>
+
+            <div id="editable-tasks-list">
+                <!-- Сюди динамічно завантажаться завдання для редагування/видалення -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно «Домік» (Мій кабінет) -->
+    <div id="cabin-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="close-cabin" class="close">&times;</span>
+            <h3>Мій кабінет</h3>
+            <p id="user-info-text">Завантаження інформації...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
