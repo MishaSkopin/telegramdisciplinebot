@@ -91,7 +91,7 @@ function renderTable(tasks) {
             ${renderSelectCell(task.task_id, 'fri', task.days.fri)}
             ${renderSelectCell(task.task_id, 'sat', task.days.sat)}
             ${renderSelectCell(task.task_id, 'sun', task.days.sun)}
-            <td><b>${task.progress}</b></td>
+            <td id="progress-${task.task_id}"><b>${task.progress}</b></td>
         </tr>`;
     });
 
@@ -131,14 +131,10 @@ function updateStatus(taskId, day, value) {
     .then(res => res.json())
     .then(data => {
         if (data.status === "success" && data.progress) {
-            // Знаходимо рядок за taskId і оновлюємо відсоток візуально в таблиці
-            const selectEl = document.querySelector(`[data-task-id="${taskId}"][data-day="${day}"]`);
-            if (selectEl) {
-                const row = selectEl.closest("tr");
-                const progressCell = row.querySelector(".progress-cell");
-                if (progressCell) {
-                    progressCell.innerHTML = `<b>${data.progress}</b>`;
-                }
+            // Чітко знаходимо комірку за її унікальним ID і оновлюємо відсоток на льоту!
+            const cell = document.getElementById(`progress-${taskId}`);
+            if (cell) {
+                cell.innerHTML = `<b>${data.progress}</b>`;
             }
         }
     })
@@ -197,8 +193,18 @@ window.deleteTaskItem = function(taskId) {
 
 function addNewTask() {
     const input = document.getElementById("new-task-input");
+    if (!input) {
+        console.error("Поле вводу #new-task-input не знайдено!");
+        return;
+    }
+    
     const taskName = input.value.trim();
-    if (!taskName) return;
+    if (!taskName) {
+        alert("Введіть назву завдання!");
+        return;
+    }
+
+    console.log("Додавання завдання:", taskName);
 
     fetch(WEB_APP_URL, {
         method: "POST",
@@ -210,10 +216,28 @@ function addNewTask() {
     })
     .then(res => res.json())
     .then(data => {
+        console.log("Відповідь сервера:", data);
         if (data.status === "success") {
-            input.value = "";
-            openEditModal();
+            input.value = ""; // Очищаємо поле
+            
+            // Зберігаємо поточні дані в пам'яті (щоб не робити зайвий запит) 
+            // або одразу завантажуємо оновлені дані з сервера перед оновленням модалки
+            fetch(`${WEB_APP_URL}?action=getData&userId=${userId}`)
+                .then(r => r.json())
+                .then(d => {
+                    if (d.status === "success") {
+                        currentData = d.tasks;
+                        renderTable(currentData); // Оновлюємо фонову таблицю
+                        openEditModal();          // Перевідкриваємо модалку, щоб нове завдання з'явилося в списку
+                    }
+                });
+        } else {
+            alert("Помилка при додаванні: " + data.message);
         }
+    })
+    .catch(err => {
+        console.error("Add task fetch error:", err);
+        alert("Помилка зв'язку з сервером.");
     });
 }
 
