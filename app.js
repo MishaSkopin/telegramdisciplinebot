@@ -131,7 +131,7 @@ function updateStatus(taskId, day, value) {
     .then(res => res.json())
     .then(data => {
         if (data.status === "success") {
-            loadAppData(); 
+        
         }
     })
     .catch(err => console.error("Update error:", err));
