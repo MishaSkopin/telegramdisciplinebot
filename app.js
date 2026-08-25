@@ -25,10 +25,12 @@ function getCurrentWeek() {
   return `${now.getFullYear()}-W${week}`;
 }
 
-const week = getCurrentWeek();
+const weekNow = getCurrentWeek();   // справжній поточний тиждень (не міняється)
+let selectedWeek = weekNow;         // який тиждень зараз дивимось
 let currentData = [];
 let currentBonuses = 0;
 let currentMandatory = null;
+let availableWeeks = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadAppData();
@@ -46,6 +48,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("btn-add-task")?.addEventListener("click", addNewTask);
+
+  // Навігація по тижнях
+  document.getElementById("btn-prev-week")?.addEventListener("click", goPrevWeek);
+  document.getElementById("btn-next-week")?.addEventListener("click", goNextWeek);
 });
 
 // ====================== ЗАВАНТАЖЕННЯ ======================
@@ -54,13 +60,29 @@ function loadAppData() {
   if (!container) return;
   container.innerHTML = "<div class='loading'>Завантаження завдань...</div>";
 
-  fetch(`${WEB_APP_URL}?action=getData&userId=${userId}&week=${week}&username=${encodeURIComponent(username)}`)
+  // Редагувати / додавати можна тільки на поточному тижні
+  const isCurrent = selectedWeek === weekNow;
+  const btnEdit = document.getElementById("btn-edit");
+  if (btnEdit) btnEdit.style.display = isCurrent ? "inline-flex" : "none";
+
+  fetch(`${WEB_APP_URL}?action=getData&userId=${userId}&week=${selectedWeek}&username=${encodeURIComponent(username)}`)
     .then(res => res.json())
     .then(data => {
       if (data.status === "success") {
         currentData = data.tasks || [];
         currentBonuses = data.bonuses || 0;
         currentMandatory = data.mandatory || null;
+        availableWeeks = data.availableWeeks || [];
+        selectedWeek = data.week || selectedWeek;
+
+        // Заголовок з датами
+        const range = data.dateRange;
+        const titleEl = document.getElementById("week-title");
+        if (titleEl && range) {
+          titleEl.textContent = range.start + " – " + range.end;
+        }
+
+        updateNavButtons();
         renderTable(currentData);
       } else {
         container.innerHTML = `<p style="text-align:center;color:#ff4d6d;">Помилка: ${data.message || "невідома"}</p>`;
@@ -156,6 +178,13 @@ function renderSelectCell(task, day) {
 
 // ====================== ЗМІНА СТАТУСУ (з миттєвим кольором) ======================
 function onStatusChange(e) {
+  // Блокуємо зміни не на поточному тижні
+  if (selectedWeek !== weekNow) {
+    alert("Редагувати можна лише поточний тиждень");
+    loadAppData(); // повертаємо старе значення
+    return;
+  }
+
   const select = e.target;
   const taskId = select.dataset.taskId;
   const day = select.dataset.day;
@@ -168,13 +197,12 @@ function onStatusChange(e) {
   else if (value === "*") select.classList.add("val-star");
   else select.classList.add("val-none");
 
-  // Відправляємо на сервер
   fetch(WEB_APP_URL, {
     method: "POST",
     body: JSON.stringify({
       action: "updateTaskStatus",
       userId: userId,
-      week: week,
+      week: selectedWeek,          // ← було week
       taskId: taskId,
       day: day,
       value: value
@@ -183,22 +211,18 @@ function onStatusChange(e) {
   .then(res => res.json())
   .then(data => {
     if (data.status === "success") {
-      // Оновлюємо %
       if (data.progress) {
         const cell = document.getElementById(`progress-${taskId}`);
         if (cell) cell.innerHTML = `<b>${data.progress}</b>`;
       }
-      // Оновлюємо бонуси
       if (typeof data.bonuses === "number") {
         currentBonuses = data.bonuses;
       }
-      // Якщо щойно виконали обов'язкове — додаємо голубу обводку
       if (data.mandatoryCompleted) {
         select.classList.add("mandatory-done");
       }
     } else {
       alert(data.message || "Помилка");
-      // Повертаємо попереднє значення (перезавантажуємо)
       loadAppData();
     }
   })
@@ -226,6 +250,11 @@ function openEditModal() {
 }
 
 window.saveTaskEdit = function(taskId) {
+  if (selectedWeek !== weekNow) {
+    alert("Редагувати можна лише поточний тиждень");
+    return;
+  }
+
   const newName = document.getElementById(`input-${taskId}`)?.value?.trim();
   if (!newName) return;
 
@@ -234,7 +263,7 @@ window.saveTaskEdit = function(taskId) {
     body: JSON.stringify({
       action: "editTask",
       userId: userId,
-      week: week,
+      week: selectedWeek,          // ← було week
       taskId: taskId,
       newTaskName: newName
     })
@@ -251,6 +280,11 @@ window.saveTaskEdit = function(taskId) {
 };
 
 window.deleteTaskItem = function(taskId) {
+  if (selectedWeek !== weekNow) {
+    alert("Редагувати можна лише поточний тиждень");
+    return;
+  }
+
   if (!confirm("Видалити це завдання?")) return;
 
   fetch(WEB_APP_URL, {
@@ -258,7 +292,7 @@ window.deleteTaskItem = function(taskId) {
     body: JSON.stringify({
       action: "deleteTask",
       userId: userId,
-      week: week,
+      week: selectedWeek,          // ← було week
       taskId: taskId
     })
   })
@@ -272,6 +306,11 @@ window.deleteTaskItem = function(taskId) {
 };
 
 function addNewTask() {
+  if (selectedWeek !== weekNow) {
+    alert("Редагувати можна лише поточний тиждень");
+    return;
+  }
+
   const input = document.getElementById("new-task-input");
   if (!input) return;
   const taskName = input.value.trim();
@@ -285,7 +324,7 @@ function addNewTask() {
     body: JSON.stringify({
       action: "addTask",
       userId: userId,
-      week: week,
+      week: selectedWeek,          // ← було week
       taskName: taskName
     })
   })
@@ -300,7 +339,7 @@ function addNewTask() {
     }
   })
   .catch(() => alert("Помилка зв'язку"));
-}
+  }
 
 // ====================== КАБІНЕТ ======================
 function openCabinModal() {
@@ -328,4 +367,55 @@ function openCabinModal() {
   `;
 
   document.getElementById("cabin-modal").style.display = "flex";
+}
+function updateNavButtons() {
+  const btnPrev = document.getElementById("btn-prev-week");
+  const btnNext = document.getElementById("btn-next-week");
+  if (!btnPrev || !btnNext) return;
+
+  const idx = availableWeeks.indexOf(selectedWeek);
+
+  // Назад — тільки якщо є старіший тиждень з даними
+  btnPrev.disabled = (idx <= 0);
+
+  // Вперед — тільки якщо не на поточному тижні і є новіший
+  const isCurrent = selectedWeek === weekNow;
+  btnNext.disabled = isCurrent || idx === -1 || idx >= availableWeeks.length - 1;
+}
+
+function goPrevWeek() {
+  const idx = availableWeeks.indexOf(selectedWeek);
+  if (idx > 0) {
+    selectedWeek = availableWeeks[idx - 1];
+    loadAppData();
+  }
+}
+
+function goNextWeek() {
+  const idx = availableWeeks.indexOf(selectedWeek);
+  if (idx >= 0 && idx < availableWeeks.length - 1) {
+    const next = availableWeeks[idx + 1];
+    // Не даємо йти далі поточного
+    if (next <= weekNow || availableWeeks.indexOf(weekNow) >= 0) {
+      selectedWeek = next;
+      // додаткова перевірка
+      if (compareWeeks(selectedWeek, weekNow) > 0) {
+        selectedWeek = weekNow;
+      }
+      loadAppData();
+    }
+  } else if (selectedWeek !== weekNow) {
+    // якщо поточного ще немає в списку — переходимо на нього
+    selectedWeek = weekNow;
+    loadAppData();
+  }
+}
+// Порівняння тижнів "2026-W35"
+function compareWeeks(a, b) {
+  const pa = a.split("-W");
+  const pb = b.split("-W");
+  const ya = parseInt(pa[0], 10), wa = parseInt(pa[1], 10);
+  const yb = parseInt(pb[0], 10), wb = parseInt(pb[1], 10);
+  if (ya !== yb) return ya - yb;
+  return wa - wb;
 }
