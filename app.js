@@ -63,7 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // ====================== ЗАВАНТАЖЕННЯ ======================
 function loadAppData() {
   const container = document.getElementById("table-container");
-  if (!container) return;
+  if (!container) return Promise.resolve();
+
   container.innerHTML = "<div class='loading'>Завантаження завдань...</div>";
 
   // Редагувати / додавати можна тільки на поточному тижні
@@ -71,7 +72,7 @@ function loadAppData() {
   const btnEdit = document.getElementById("btn-edit");
   if (btnEdit) btnEdit.style.display = isCurrent ? "inline-flex" : "none";
 
-  fetch(`${WEB_APP_URL}?action=getData&userId=${userId}&week=${selectedWeek}&username=${encodeURIComponent(username)}`)
+  return fetch(`${WEB_APP_URL}?action=getData&userId=${userId}&week=${selectedWeek}&username=${encodeURIComponent(username)}`)
     .then(res => res.json())
     .then(data => {
       if (data.status === "success") {
@@ -87,6 +88,18 @@ function loadAppData() {
         if (titleEl && range) {
           titleEl.textContent = range.start + " – " + range.end;
         }
+
+        updateNavButtons();
+        renderTable(currentData);
+      } else {
+        container.innerHTML = `<p style="text-align:center;color:#ff4d6d;">Помилка: ${data.message || "невідома"}</p>`;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      container.innerHTML = "<p style='text-align:center;color:#ff4d6d;'>Помилка зв'язку з сервером.</p>";
+    });
+}
 
         updateNavButtons();
         renderTable(currentData);
@@ -324,6 +337,9 @@ window.moveTaskItem = function(taskId, direction) {
     return;
   }
 
+  // Блокуємо кнопки на час запиту (щоб не натискали багато разів)
+  document.querySelectorAll(".btn-move").forEach(btn => btn.disabled = true);
+
   fetch(WEB_APP_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -331,20 +347,25 @@ window.moveTaskItem = function(taskId, direction) {
       userId: userId,
       week: selectedWeek,
       taskId: taskId,
-      direction: direction   // "up" або "down"
+      direction: direction
     })
   })
   .then(res => res.json())
   .then(data => {
     if (data.status === "success") {
-      loadAppData();          // оновлюємо таблицю
-      // трохи зачекаємо, щоб currentData оновився, і знову відкриємо модалку
-      setTimeout(() => openEditModal(), 300);
+      // Чекаємо, поки дані реально оновляться, і тільки тоді перемальовуємо модалку
+      return loadAppData().then(() => {
+        openEditModal();   // тепер currentData вже новий
+      });
     } else {
       alert(data.message || "Помилка");
+      openEditModal(); // повертаємо кнопки
     }
   })
-  .catch(() => alert("Помилка зв'язку"));
+  .catch(() => {
+    alert("Помилка зв'язку");
+    openEditModal();
+  });
 };
 
 function addNewTask() {
