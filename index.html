@@ -3,46 +3,54 @@
 <head>
   <base target="_top">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Щоденний трекер</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- ГОЛОВНИЙ ЕКРАН ТРЕКЕРА -->
+  <!-- ГОЛОВНИЙ ЕКРАН -->
   <div id="main-screen" class="app-container">
     <div class="header">
       <h2 id="welcome-msg">Тижневий трекер</h2>
-      <div>
-        <button class="btn-icon" onclick="openEditModal()" title="Редагувати завдання">✏️</button>
+      <div class="header-buttons">
+        <button class="btn-icon" id="btn-edit" title="Редагувати завдання">✏️</button>
+        <button class="btn-icon" id="btn-cabin" title="Кабінет">🏠</button>
       </div>
     </div>
     
-    <!-- Контейнер куди динамічно завантажується таблиця -->
     <div class="table-container" id="table-container">
       <div class="loading">Завантаження завдань...</div>
     </div>
   </div>
 
-  <!-- МОДАЛКА РЕДАГУВАННЯ / ДОДАВАННЯ -->
-  <div id="edit-modal" class="modal hidden">
+  <!-- МОДАЛКА РЕДАГУВАННЯ -->
+  <div id="edit-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="header" style="margin-bottom: 12px;">
         <h2 style="font-size: 15px;">Редагування завдань</h2>
-        <button class="btn-icon" onclick="openEditModal()">✕</button>
+        <button class="btn-icon" id="close-modal">✕</button>
       </div>
       
-      <!-- Поле додавання нового завдання -->
       <div class="add-task-box">
         <input type="text" id="new-task-input" placeholder="Нове завдання..." />
-        <button class="submit-btn" id="btn-add-task" onclick="addNewTask()">Додати</button>
+        <button class="submit-btn" id="btn-add-task">Додати</button>
       </div>
       
       <hr style="margin: 12px 0; border: none; border-top: 1px solid #333;" />
       
-      <!-- Список для редагування існуючих завдань -->
       <div id="edit-list-container"></div>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА КАБІНЕТУ -->
+  <div id="cabin-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="header" style="margin-bottom: 12px;">
+        <h2 style="font-size: 15px;">Кабінет</h2>
+        <button class="btn-icon" id="close-cabin">✕</button>
+      </div>
+      <div id="user-info-text"></div>
     </div>
   </div>
 
