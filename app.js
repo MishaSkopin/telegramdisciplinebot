@@ -76,13 +76,15 @@ function renderTable(tasks) {
 
     let html = `<div class="table-scroll"><table class="tracker-table">
         <tr>
-            <th>Завдання</th>
+            <th style="width: 35px;">№</th>
+            <th style="text-align: left; min-width: 140px;">Завдання на день</th>
             <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Нд</th>
             <th>%</th>
         </tr>`;
 
-    tasks.forEach(task => {
+    tasks.forEach((task, index) => {
         html += `<tr>
+            <td style="text-align: center; color: var(--tg-theme-hint-color, #707579);">${index + 1}</td>
             <td class="task-name-cell">${task.task_name}</td>
             ${renderSelectCell(task.task_id, 'mon', task.days.mon)}
             ${renderSelectCell(task.task_id, 'tue', task.days.tue)}
@@ -91,9 +93,22 @@ function renderTable(tasks) {
             ${renderSelectCell(task.task_id, 'fri', task.days.fri)}
             ${renderSelectCell(task.task_id, 'sat', task.days.sat)}
             ${renderSelectCell(task.task_id, 'sun', task.days.sun)}
-            <td id="progress-${task.task_id}"><b>${task.progress}</b></td>
+            <td class="progress-cell" id="progress-${task.task_id}"><b>${task.progress}</b></td>
         </tr>`;
     });
+
+    html += `</table></div>`;
+    container.innerHTML = html;
+
+    document.querySelectorAll(".status-select").forEach(select => {
+        select.addEventListener("change", (e) => {
+            const taskId = e.target.dataset.taskId;
+            const day = e.target.dataset.day;
+            const value = e.target.value;
+            updateStatus(taskId, day, value);
+        });
+    });
+}
 
     html += `</table></div>`;
     container.innerHTML = html;
