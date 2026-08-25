@@ -45,24 +45,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Завантаження даних із таблиці
 function loadAppData() {
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("table-container").style.display = "none";
+    const container = document.getElementById("table-container");
+    container.innerHTML = "<div class='loading'>Завантаження завдань...</div>";
 
-    fetch(`${WEB_APP_URL}?action=getData&userId=${userId}`)
+    fetch(`${WEB_APP_URL}?action=getData&userId=${userId}&week=${week}`)
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
                 currentData = data.tasks;
                 renderTable(currentData);
             } else {
-                alert("Помилка завантаження: " + data.message);
+                container.innerHTML = `<p style="text-align:center; color:#ff4d6d;">Помилка: ${data.message}</p>`;
             }
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("table-container").style.display = "block";
         })
         .catch(err => {
-            console.error("Fetch error:", err);
-            document.getElementById("loading").innerText = "Помилка зв'язку з сервером таблиці.";
+            console.error("Load error:", err);
+            container.innerHTML = "<p style='text-align:center; color:#ff4d6d;'>Помилка зв'язку з сервером.</p>";
         });
 }
 
