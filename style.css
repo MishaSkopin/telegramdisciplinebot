@@ -23,12 +23,19 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .header h2 { font-size: 18px; font-weight: 600; }
 
-.header-buttons { display: flex; gap: 8px; }
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
 
 .btn-icon {
   background: var(--secondary);
@@ -39,6 +46,12 @@ body {
   font-size: 18px;
   cursor: pointer;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 .table-container { overflow-x: auto; }
@@ -234,25 +247,28 @@ body {
 .week-nav {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
 }
 
 .week-nav h2 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .btn-nav {
   width: 34px;
   height: 34px;
   font-size: 16px;
-  flex-shrink: 0;
 }
 
 .btn-nav:disabled {
