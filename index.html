@@ -1,55 +1,51 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Tracker Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Щоденний трекер</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Шапка застосунку -->
-        <header class="header">
-            <h2 id="week-title">Тижневий трекер</h2>
-            <div class="header-buttons">
-                <button id="btn-cabin" title="Мій кабінет">🏠</button>
-                <button id="btn-edit" title="Редагувати завдання">✏️</button>
-            </div>
-        </header>
 
-        <!-- Основний блок завантаження / таблиці -->
-        <div id="loading" class="loading">Завантаження завдань...</div>
-        <div id="table-container" class="table-container" style="display: none;"></div>
+  <!-- ГОЛОВНИЙ ЕКРАН ТРЕКЕРА -->
+  <div id="main-screen" class="app-container">
+    <div class="header">
+      <h2 id="welcome-msg">Тижневий трекер</h2>
+      <div>
+        <button class="btn-icon" onclick="openEditModal()" title="Редагувати завдання">✏️</button>
+      </div>
     </div>
-
-    <!-- Модальне вікно «Олівчик» (Редагування та додавання завдань) -->
-    <div id="edit-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span id="close-modal" class="close">&times;</span>
-            <h3>Редагування завдань</h3>
-            
-            <!-- Поле для додавання нового завдання -->
-            <div class="add-task-box">
-                <input type="text" id="new-task-input" placeholder="Введіть нове завдання...">
-                <button id="btn-add-task">Додати</button>
-            </div>
-
-            <div id="editable-tasks-list">
-                <!-- Сюди динамічно завантажаться завдання для редагування/видалення -->
-            </div>
-        </div>
+    
+    <!-- Контейнер куди динамічно завантажується таблиця -->
+    <div class="table-container" id="table-container">
+      <div class="loading">Завантаження завдань...</div>
     </div>
+  </div>
 
-    <!-- Модальне вікно «Домік» (Мій кабінет) -->
-    <div id="cabin-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span id="close-cabin" class="close">&times;</span>
-            <h3>Мій кабінет</h3>
-            <p id="user-info-text">Завантаження інформації...</p>
-        </div>
+  <!-- МОДАЛКА РЕДАГУВАННЯ / ДОДАВАННЯ -->
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="header" style="margin-bottom: 12px;">
+        <h2 style="font-size: 15px;">Редагування завдань</h2>
+        <button class="btn-icon" onclick="openEditModal()">✕</button>
+      </div>
+      
+      <!-- Поле додавання нового завдання -->
+      <div class="add-task-box">
+        <input type="text" id="new-task-input" placeholder="Нове завдання..." />
+        <button class="submit-btn" id="btn-add-task" onclick="addNewTask()">Додати</button>
+      </div>
+      
+      <hr style="margin: 12px 0; border: none; border-top: 1px solid #333;" />
+      
+      <!-- Список для редагування існуючих завдань -->
+      <div id="edit-list-container"></div>
     </div>
+  </div>
 
-    <script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
