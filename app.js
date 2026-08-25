@@ -109,9 +109,15 @@ function renderTable(tasks) {
 }
 
 function renderSelectCell(taskId, day, currentValue) {
-    const options = ["незаплановано", "так", "ні"];
+    // Масив опцій: значення для бекенду (value) та те, що бачить користувач (label)
+    const options = [
+        { val: "незаплановано", label: "-" },
+        { val: "так", label: "так" },
+        { val: "ні", label: "ні" }
+    ];
+
     let optionsHtml = options.map(opt => 
-        `<option value="${opt}" ${opt === currentValue ? "selected" : ""}>${opt}</option>`
+        `<option value="${opt.val}" ${opt.val === currentValue ? "selected" : ""}>${opt.label}</option>`
     ).join("");
 
     return `<td><select class="status-select" data-task-id="${taskId}" data-day="${day}">${optionsHtml}</select></td>`;
