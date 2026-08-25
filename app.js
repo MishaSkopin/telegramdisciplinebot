@@ -1,8 +1,11 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
-if (tg.disableVerticalSwipes) {
+
+// Безпечно перевіряємо, чи існує такий метод взагалі
+if (typeof tg.disableVerticalSwipes === 'function') {
     tg.disableVerticalSwipes();
 }
+
 tg.ready();
 
 // ЗАМІНИ НА СВІЙ URL
