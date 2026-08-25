@@ -130,8 +130,16 @@ function updateStatus(taskId, day, value) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.status === "success") {
-        
+        if (data.status === "success" && data.progress) {
+            // Знаходимо рядок за taskId і оновлюємо відсоток візуально в таблиці
+            const selectEl = document.querySelector(`[data-task-id="${taskId}"][data-day="${day}"]`);
+            if (selectEl) {
+                const row = selectEl.closest("tr");
+                const progressCell = row.querySelector(".progress-cell");
+                if (progressCell) {
+                    progressCell.innerHTML = `<b>${data.progress}</b>`;
+                }
+            }
         }
     })
     .catch(err => console.error("Update error:", err));
