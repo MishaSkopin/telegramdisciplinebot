@@ -1,10 +1,17 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
-if (tg.disableVerticalSwipes) {
-    tg.disableVerticalSwipes();
+
+try {
+    if (tg.disableVerticalSwipes) {
+        tg.disableVerticalSwipes();
+    }
+} catch (e) {
+    // Ігноруємо, якщо метод недоступний у поточній версії клієнта
 }
+
 tg.ready();
 
+// ЗАМІНИ НА СВІЙ URL
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw5EIAiQZcFTDtKEvzX7LMwdv-x4F4NshkGKiIIexDUN-r_FCwvfq3zkqvD_HmuQJJq/exec";
 
 const user = tg.initDataUnsafe?.user;
@@ -27,8 +34,8 @@ function getCurrentWeek() {
   return `${now.getFullYear()}-W${week}`;
 }
 
-const weekNow = getCurrentWeek();   )
-let selectedWeek = weekNow;         
+const weekNow = getCurrentWeek();   // справжній поточний тиждень (не міняється)
+let selectedWeek = weekNow;         // який тиждень зараз дивимось
 let currentData = [];
 let currentBonuses = 0;
 let currentMandatory = null;
