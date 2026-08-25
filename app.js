@@ -244,8 +244,15 @@ function openEditModal() {
   if (!listContainer) return;
 
   let html = "";
-  currentData.forEach(task => {
+  currentData.forEach((task, index) => {
+    const isFirst = index === 0;
+    const isLast = index === currentData.length - 1;
+
     html += `<div class="edit-task-item">
+      <div class="move-btns">
+        <button class="btn-move" onclick="moveTaskItem('${task.task_id}', 'up')" ${isFirst ? "disabled" : ""} title="Вгору">↑</button>
+        <button class="btn-move" onclick="moveTaskItem('${task.task_id}', 'down')" ${isLast ? "disabled" : ""} title="Вниз">↓</button>
+      </div>
       <input type="text" value="${task.task_name}" id="input-${task.task_id}">
       <button class="btn-save-edit" onclick="saveTaskEdit('${task.task_id}')">Зберегти</button>
       <button class="btn-del-edit" onclick="deleteTaskItem('${task.task_id}')">Видалити</button>
@@ -309,6 +316,35 @@ window.deleteTaskItem = function(taskId) {
       loadAppData();
     }
   });
+};
+
+window.moveTaskItem = function(taskId, direction) {
+  if (selectedWeek !== weekNow) {
+    alert("Редагувати можна лише поточний тиждень");
+    return;
+  }
+
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "moveTask",
+      userId: userId,
+      week: selectedWeek,
+      taskId: taskId,
+      direction: direction   // "up" або "down"
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      loadAppData();          // оновлюємо таблицю
+      // трохи зачекаємо, щоб currentData оновився, і знову відкриємо модалку
+      setTimeout(() => openEditModal(), 300);
+    } else {
+      alert(data.message || "Помилка");
+    }
+  })
+  .catch(() => alert("Помилка зв'язку"));
 };
 
 function addNewTask() {
