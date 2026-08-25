@@ -12,12 +12,16 @@
   <!-- ГОЛОВНИЙ ЕКРАН -->
   <div id="main-screen" class="app-container">
     <div class="header">
-      <h2 id="welcome-msg">Тижневий трекер</h2>
-      <div class="header-buttons">
-        <button class="btn-icon" id="btn-edit" title="Редагувати завдання">✏️</button>
-        <button class="btn-icon" id="btn-cabin" title="Кабінет">🏠</button>
-      </div>
-    </div>
+  <div class="week-nav">
+    <button class="btn-icon btn-nav" id="btn-prev-week" title="Попередній тиждень">←</button>
+    <h2 id="week-title">Тижневий трекер</h2>
+    <button class="btn-icon btn-nav" id="btn-next-week" title="Наступний тиждень">→</button>
+  </div>
+  <div class="header-buttons">
+    <button class="btn-icon" id="btn-edit" title="Редагувати">✏️</button>
+    <button class="btn-icon" id="btn-cabin" title="Кабінет">🏠</button>
+  </div>
+</div>
     
     <div class="table-container" id="table-container">
       <div class="loading">Завантаження завдань...</div>
